@@ -1,4 +1,5 @@
-# type
-cmake .
-make
+# usage
+mkdir build
+cd build
+cmake .. && make
 

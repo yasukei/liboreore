@@ -1,8 +1,9 @@
 #include <stdio.h>
+#include "oreore.h"
 
 int main(void)
 {
-	printf("hello cmake\n");
+	oreore();
 	return 0;
 }
 
