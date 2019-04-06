@@ -1,5 +1,7 @@
 BUILD_DIR=build
 
+.PHONY: all run test clean rebuild
+
 all:
 	mkdir -p $(BUILD_DIR)
 	cd $(BUILD_DIR) && cmake .. && make
