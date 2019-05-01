@@ -8,7 +8,7 @@ all:
 
 run: test
 
-test:
+test: all
 	$(BUILD_DIR)/test/Main
 
 clean:
