@@ -10,10 +10,11 @@
 // - nested statemachine
 // - application specific context (especially arguments for each event)
 // - State.enter/exit is Action?
+// - branch in transition
 
 typedef int Event;
 
-template<typename T>
+template <typename T>
 class Action
 {
 	public:
@@ -21,7 +22,7 @@ class Action
 		virtual void operator()(T context) = 0;
 };
 
-template<typename T>
+template <typename T>
 class GuardCondition
 {
 	public:
@@ -29,7 +30,7 @@ class GuardCondition
 		virtual bool isSatisfied(T context) = 0;
 };
 
-template<typename T>
+template <typename T>
 class State
 {
 	public:
@@ -38,7 +39,7 @@ class State
 		virtual void exit(T context) = 0;
 };
 
-template<typename T>
+template <typename T>
 class Transition
 {
 	public:
@@ -71,7 +72,7 @@ class Transition
 		Action<T>& action_;
 };
 
-template<typename T>
+template <typename T>
 class StateMachine
 {
 	public:

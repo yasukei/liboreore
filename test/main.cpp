@@ -27,10 +27,18 @@ int main(void)
 	PrintiveState s1("state1");
 	PrintiveState s2("state2");
 	StateMachine<const char*> sm(s1);
+	enum
+	{
+		event1,
+	};
 
-	sm.addTransision(s1, s2, 1);
+	sm.addTransision(s1, s2, event1);
 	sm.start(nullptr);
-	sm.onEvent(1, nullptr);
+	sm.onEvent(event1, nullptr);
+
+	// << [Condition] Event / Action
+
+	//sm += s1 -> s2 [guard] event1 / Action
 
 	return 0;
 }
