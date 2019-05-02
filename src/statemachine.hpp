@@ -7,112 +7,139 @@
 // << [Condition] Event
 // << [Condition] Event / Action
 
+// - nested statemachine
+// - application specific context (especially arguments for each event)
+// - State.enter/exit is Action?
+
 typedef int Event;
 
+template<typename T>
 class Action
 {
 	public:
 		virtual ~Action() {}
-		virtual void operator()() = 0;
+		virtual void operator()(T context) = 0;
 };
 
-class State
-{
-	public:
-		virtual ~State() {}
-		virtual void entry() = 0;
-		virtual void exit() = 0;
-};
-
+template<typename T>
 class GuardCondition
 {
 	public:
 		virtual ~GuardCondition() {}
-		virtual bool isSatisfied() { return true; };
-
-		static GuardCondition* getTrueCondition()
-		{
-			return &instance_;
-		}
-
-	private:
-		static GuardCondition instance_;
+		virtual bool isSatisfied(T context) = 0;
 };
 
-GuardCondition GuardCondition::instance_;
+template<typename T>
+class State
+{
+	public:
+		virtual ~State() {}
+		virtual void enter(T context) = 0;
+		virtual void exit(T context) = 0;
+};
 
+template<typename T>
 class Transition
 {
 	public:
-		Transition(State* src, State* dst, Event event, GuardCondition* guardCondition = GuardCondition::getTrueCondition()) :
+		Transition(State<T>& src, State<T>& dst, Event event, GuardCondition<T>& guardCondition, Action<T>& action) :
 			src_(src),
 			dst_(dst),
 			event_(event),
-			guardCondition_(guardCondition)
+			guardCondition_(guardCondition),
+			action_(action)
 		{
 		}
-		bool canTransit(State* src, Event event)
+
+		bool canTransit(State<T>& src, Event event, T context)
 		{
-			return src == src_ && event == event_ && guardCondition_->isSatisfied();
+			return &src == &src_ && event == event_ && guardCondition_.isSatisfied(context);
 		}
-		State* transit()
+
+		State<T>& transit(T context)
 		{
-			src_->exit();
-			dst_->entry();
+			src_.exit(context);
+			dst_.enter(context);
 			return dst_;
 		}
 
 	private:
-		State* src_;
-		State* dst_;
+		State<T>& src_;
+		State<T>& dst_;
 		Event event_;
-		GuardCondition* guardCondition_;
+		GuardCondition<T>& guardCondition_;
+		Action<T>& action_;
 };
 
+template<typename T>
 class StateMachine
 {
 	public:
-		StateMachine(State* initialState) :
+		StateMachine(State<T>& initialState) :
 			initialState_(initialState),
-			currentState_(nullptr),
+			currentState_(initialState),
 			transitions_()
 		{
 		}
 
 		~StateMachine()
 		{
-			for(Transition* transition : transitions_)
+			for(Transition<T>* transition : transitions_)
 			{
 				delete transition;
 			}
 			transitions_.clear();
 		}
 
-		void addTransision(State* src, State* dst, Event event)
+		void addTransision(State<T>& src, State<T>& dst, Event event)
 		{
-			Transition* transition = new Transition(src, dst, event);
+			addTransision(src, dst, event, noGuardCondition_, noAction_);
+		}
+		void addTransision(State<T>& src, State<T>& dst, Event event, GuardCondition<T>& guardCondition)
+		{
+			addTransision(src, dst, event, guardCondition, noAction_);
+		}
+		void addTransision(State<T>& src, State<T>& dst, Event event, Action<T>& action)
+		{
+			addTransision(src, dst, event, noGuardCondition_, action);
+		}
+		void addTransision(State<T>& src, State<T>& dst, Event event, GuardCondition<T>& guardCondition, Action<T>& action)
+		{
+			Transition<T>* transition = new Transition<T>(src, dst, event, guardCondition, action);
 			transitions_.push_back(transition);
 		}
-		void start()
+		void start(T context)
 		{
 			currentState_ = initialState_;
-			currentState_->entry();
+			currentState_.enter(context);
 		}
-		void onEvent(Event event)
+		void onEvent(Event event, T context)
 		{
-			for(Transition* transition : transitions_)
+			for(Transition<T>* transition : transitions_)
 			{
-				if(transition->canTransit(currentState_, event))
+				if(transition->canTransit(currentState_, event, context))
 				{
-					currentState_ = transition->transit();
+					currentState_ = transition->transit(context);
 					break;
 				}
 			}
 		}
 
 	private:
-		State* initialState_;
-		State* currentState_;
-		std::vector<Transition*> transitions_;
+		State<T>& initialState_;
+		State<T>& currentState_;
+		std::vector<Transition<T>*> transitions_;
+
+		class NoGuardCondition : public GuardCondition<T>
+		{
+			public:
+				bool isSatisfied(T /* context */) { return true; }
+		}noGuardCondition_;
+
+		class NoAction : public Action<T>
+		{
+			public:
+				void operator()(T /* context */) {}
+		}noAction_;
 };
 
