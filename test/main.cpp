@@ -1,8 +1,16 @@
 #include <stdio.h>
 #include <string>
 
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
+
 #include "oreore.h"
 #include "statemachine.hpp"
+
+TEST(aaa, bbb)
+{
+	EXPECT_TRUE(true);
+}
 
 class PrintiveState : public State<const char*>
 {
@@ -20,7 +28,7 @@ class PrintiveState : public State<const char*>
 		PrintiveState() {}
 };
 
-int main(void)
+int dummymain(void)
 {
 	oreore();
 
