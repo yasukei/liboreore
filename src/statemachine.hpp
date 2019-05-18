@@ -7,10 +7,13 @@
 // << [Condition] Event
 // << [Condition] Event / Action
 
+// [TODO]
 // - nested statemachine
-// - application specific context (especially arguments for each event)
 // - State.enter/exit is Action?
 // - branch in transition
+
+// [DONE]
+// - application specific context (especially arguments for each event)
 
 typedef int Event;
 
@@ -92,19 +95,19 @@ class StateMachine
 			transitions_.clear();
 		}
 
-		void addTransision(State<T>& src, State<T>& dst, Event event)
+		void addTransition(State<T>& src, State<T>& dst, Event event)
 		{
-			addTransision(src, dst, event, noGuardCondition_, noAction_);
+			addTransition(src, dst, event, noGuardCondition_, noAction_);
 		}
-		void addTransision(State<T>& src, State<T>& dst, Event event, GuardCondition<T>& guardCondition)
+		void addTransition(State<T>& src, State<T>& dst, Event event, GuardCondition<T>& guardCondition)
 		{
-			addTransision(src, dst, event, guardCondition, noAction_);
+			addTransition(src, dst, event, guardCondition, noAction_);
 		}
-		void addTransision(State<T>& src, State<T>& dst, Event event, Action<T>& action)
+		void addTransition(State<T>& src, State<T>& dst, Event event, Action<T>& action)
 		{
-			addTransision(src, dst, event, noGuardCondition_, action);
+			addTransition(src, dst, event, noGuardCondition_, action);
 		}
-		void addTransision(State<T>& src, State<T>& dst, Event event, GuardCondition<T>& guardCondition, Action<T>& action)
+		void addTransition(State<T>& src, State<T>& dst, Event event, GuardCondition<T>& guardCondition, Action<T>& action)
 		{
 			Transition<T>* transition = new Transition<T>(src, dst, event, guardCondition, action);
 			transitions_.push_back(transition);

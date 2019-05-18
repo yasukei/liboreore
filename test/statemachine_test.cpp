@@ -4,13 +4,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include "oreore.h"
 #include "statemachine.hpp"
-
-TEST(aaa, bbb)
-{
-	EXPECT_TRUE(true);
-}
 
 class PrintiveState : public State<const char*>
 {
@@ -30,24 +24,31 @@ class PrintiveState : public State<const char*>
 
 int dummymain(void)
 {
-	oreore();
-
 	PrintiveState s1("state1");
 	PrintiveState s2("state2");
 	StateMachine<const char*> sm(s1);
 	enum
 	{
 		event1,
+		event2,
 	};
 
-	sm.addTransision(s1, s2, event1);
+	// << [Condition] Event / Action
+	//sm += s1 -> s2 [guard] | event1 / Action
+	//sm::s1->s2|event1
+	sm.addTransition(s1, s2, event1);
+	sm.addTransition(s2, s1, event2);
+
 	sm.start(nullptr);
 	sm.onEvent(event1, nullptr);
-
-	// << [Condition] Event / Action
-
-	//sm += s1 -> s2 [guard] event1 / Action
+	sm.onEvent(event2, nullptr);
 
 	return 0;
+}
+
+TEST(aaa, bbb)
+{
+	dummymain();
+	EXPECT_TRUE(true);
 }
 

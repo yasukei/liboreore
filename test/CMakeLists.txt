@@ -15,7 +15,7 @@ add_subdirectory("${gtest_SOURCE_DIR}" "${gtest_BINARY_DIR}")
 
 add_executable(
 	Main
-	main.cpp
+	statemachine_test.cpp
 	)
 target_link_libraries(Main oreore gtest gmock gtest_main)
 
