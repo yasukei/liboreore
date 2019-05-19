@@ -10,13 +10,14 @@
 // [TODO]
 // - nested statemachine
 // - polymorphism for State.onEvent without switch-case (= arbitary onEvent method such as onTick)
-// - coverage
 // - performance
+// - memory leak checker
 
 // [DONE]
 // - application specific context (especially arguments for each event)
 // - branch in transition
 // - ctest
+// - coverage
 
 typedef int Event;
 

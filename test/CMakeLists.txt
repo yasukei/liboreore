@@ -17,7 +17,7 @@ add_executable(
 	liboreore_test
 	statemachine_test.cpp
 	)
-target_link_libraries(liboreore_test oreore gtest gmock gtest_main)
+target_link_libraries(liboreore_test oreore gtest gmock gtest_main gcov)
 
 add_test(
 	NAME liboreore_test

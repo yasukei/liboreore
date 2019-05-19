@@ -11,6 +11,12 @@ run: test
 test: all
 	cd $(BUILD_DIR) && ctest .. -V
 
+coverage: test
+	cd $(BUILD_DIR)/test \
+		&& lcov -d . -c -o coverage.info \
+		&& lcov -r coverage.info */googletest/* test/* */c++/* -o coverage_filtered.info \
+		&& genhtml -o lcov.html coverage_filtered.info
+
 clean:
 	rm -rf $(BUILD_DIR)
 
