@@ -17,9 +17,24 @@ add_executable(
 	liboreore_test
 	statemachine_test.cpp
 	)
-target_link_libraries(liboreore_test oreore gtest gmock gtest_main gcov)
+target_link_libraries(
+	liboreore_test
+	oreore
+	gtest
+	gmock
+	gtest_main
+	gcov
+	-lprofiler -Wl,--no-as-needed -lprofiler -Wl,--as-needed
+	tcmalloc
+	)
 
 add_test(
 	NAME liboreore_test
 	COMMAND $<TARGET_FILE:liboreore_test>
+	)
+set_property(
+	TEST liboreore_test PROPERTY
+	ENVIRONMENT CPUPROFILE=liboreore_cpu
+	#ENVIRONMENT CPUPROFILE_FREQUENCY=1000
+	ENVIRONMENT HEAPPROFILE=liboreore_heap
 	)
