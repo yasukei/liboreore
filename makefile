@@ -9,7 +9,7 @@ all:
 run: test
 
 test: all
-	$(BUILD_DIR)/test/Main
+	cd $(BUILD_DIR) && ctest .. -V
 
 clean:
 	rm -rf $(BUILD_DIR)

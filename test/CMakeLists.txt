@@ -14,8 +14,12 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory("${gtest_SOURCE_DIR}" "${gtest_BINARY_DIR}")
 
 add_executable(
-	Main
+	liboreore_test
 	statemachine_test.cpp
 	)
-target_link_libraries(Main oreore gtest gmock gtest_main)
+target_link_libraries(liboreore_test oreore gtest gmock gtest_main)
 
+add_test(
+	NAME liboreore_test
+	COMMAND $<TARGET_FILE:liboreore_test>
+	)

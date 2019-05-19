@@ -10,10 +10,13 @@
 // [TODO]
 // - nested statemachine
 // - polymorphism for State.onEvent without switch-case (= arbitary onEvent method such as onTick)
+// - coverage
+// - performance
 
 // [DONE]
 // - application specific context (especially arguments for each event)
 // - branch in transition
+// - ctest
 
 typedef int Event;
 

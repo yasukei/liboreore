@@ -15,6 +15,7 @@ execute_process(COMMAND "${CMAKE_COMMAND}" --build .
 #
 project(liboreore)
 add_subdirectory(src)
+enable_testing()
 add_subdirectory(test)
 
 target_compile_options(oreore PUBLIC -g -Wall -Wextra -O0)
