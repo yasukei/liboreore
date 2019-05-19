@@ -12,6 +12,7 @@
 // - polymorphism for State.onEvent without switch-case (= arbitary onEvent method such as onTick)
 // - performance
 // - memory leak checker
+// - gdb
 
 // [DONE]
 // - application specific context (especially arguments for each event)
