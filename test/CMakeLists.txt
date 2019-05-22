@@ -1,6 +1,6 @@
-#
+# -------------------------------------------------------------------
 # gtest by DownloadProject
-#
+# -------------------------------------------------------------------
 include("${CMAKE_BINARY_DIR}/DownloadProject-src/DownloadProject.cmake")
 download_project(
 	PROJ gtest
@@ -13,10 +13,14 @@ download_project(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory("${gtest_SOURCE_DIR}" "${gtest_BINARY_DIR}")
 
+# -------------------------------------------------------------------
+# Test executable
+# -------------------------------------------------------------------
 add_executable(
 	liboreore_test
 	statemachine_test.cpp
 	)
+
 target_link_libraries(
 	liboreore_test
 	oreore
@@ -24,17 +28,24 @@ target_link_libraries(
 	gmock
 	gtest_main
 	gcov
-	-lprofiler -Wl,--no-as-needed -lprofiler -Wl,--as-needed
-	tcmalloc
 	)
+
+if(PROFILE MATCHES ON)
+	target_link_libraries(
+		liboreore_test
+		-lprofiler -Wl,--no-as-needed -lprofiler -Wl,--as-needed
+		tcmalloc
+	)
+	set_property(
+		TEST liboreore_test PROPERTY
+		ENVIRONMENT CPUPROFILE=liboreore_cpu
+		#ENVIRONMENT CPUPROFILE_FREQUENCY=1000
+		ENVIRONMENT HEAPPROFILE=liboreore_heap
+		)
+endif()
 
 add_test(
 	NAME liboreore_test
 	COMMAND $<TARGET_FILE:liboreore_test>
 	)
-set_property(
-	TEST liboreore_test PROPERTY
-	ENVIRONMENT CPUPROFILE=liboreore_cpu
-	#ENVIRONMENT CPUPROFILE_FREQUENCY=1000
-	ENVIRONMENT HEAPPROFILE=liboreore_heap
-	)
+

@@ -10,8 +10,9 @@
 // [TODO]
 // - nested statemachine
 // - polymorphism for State.onEvent without switch-case (= arbitary onEvent method such as onTick)
-// - memory leak checker
 // - gdb
+// - travis
+// - cppcheck
 
 // [DONE]
 // - application specific context (especially arguments for each event)
@@ -19,6 +20,7 @@
 // - ctest
 // - coverage
 // - performance
+// - memory leak checker
 
 typedef int Event;
 
