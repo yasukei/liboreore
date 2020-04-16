@@ -1,4 +1,4 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "statemachine.hpp"
 
@@ -38,4 +38,6 @@ TEST(TestCaseName, TestName)
 
     statemachine.addTransition(state1, TestEvent::even1, state1);
     statemachine.start(context);
+
+	EXPECT_TRUE(false);
 }

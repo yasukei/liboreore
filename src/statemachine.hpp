@@ -23,7 +23,7 @@ template <typename T>
 class Branch
 {
 public:
-	virtual State<T>& operator()(T context);
+	virtual State<T>& operator()(T context) = 0;
 };
 
 template <typename T>
@@ -90,7 +90,7 @@ public:
 	}
 	bool addTransition(State<T>& src, int event, Action<T>& action, Branch<T>& branch)
 	{
-		Transition<T>* transition = findTransition(src, event);
+		Transition<T>* transition = findTransition(&src, event);
 		if (transition != nullptr)
 		{
 			// transition already exists
@@ -103,7 +103,7 @@ public:
 			return false;
 		}
 
-		std::pair<State<T>, int> key = std::make_pair(src, event);
+		std::pair<State<T>*, int> key = std::make_pair(&src, event);
 		_transitionMap.insert(std::make_pair(key, transition));
 		return true;
 	}
@@ -139,7 +139,7 @@ public:
 
 	void onEvent(int event, T context)
 	{
-		Transition<T>* transition = findTransition(src, event);
+		Transition<T>* transition = findTransition(&_currentState, event);
 		if (transition == nullptr)
 		{
 			return;
@@ -151,18 +151,18 @@ public:
 private:
 	State<T>& _initialState;
 	State<T>& _currentState;
-	std::map<std::pair<State<T>, int>, Transition<T>*> _transitionMap;
+	std::map<std::pair<State<T>*, int>, Transition<T>*> _transitionMap;
 	
-	Transition<T>* findTransition(State<T>& src, int event)
+	Transition<T>* findTransition(State<T>* src, int event)
 	{
-		std::pair<State<T>, int> key = std::make_pair(src, event);
-		typename std::map<std::pair<State<T>, int>, Transition<T>*>::iterator it;
+		std::pair<State<T>*, int> key = std::make_pair(src, event);
+		typename std::map<std::pair<State<T>*, int>, Transition<T>*>::iterator it = _transitionMap.find(key);
 
-		it = _transitionMap.find(key);
 		if (it == _transitionMap.end())
 		{
+			// not found
 			return nullptr;
 		}
-		return it.second();
+		return it->second;
 	}
 };
