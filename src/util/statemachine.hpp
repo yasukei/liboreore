@@ -91,7 +91,7 @@ public:
 	{
 	}
 
-	State<T>& transit(T context)
+	State<T>* transit(T context)
 	{
 		_src.exit(context);
 		_action(context);
@@ -99,7 +99,7 @@ public:
 		State<T>& dst = _branch(context);
 		dst.entry(context);
 
-		return dst;
+		return &dst;
 	}
 private:
 	State<T>& _src;
@@ -113,7 +113,7 @@ class StateMachine
 public:
 	StateMachine(State<T>& initialState) :
 		_initialState(initialState),
-		_currentState(initialState)
+		_currentState(&initialState)
 	{
 	}
 	~StateMachine()
@@ -171,26 +171,26 @@ public:
 
 	void start(T context)
 	{
-		_currentState = _initialState;
-		_currentState.entry(context);
+		_currentState = &_initialState;
+		_currentState->entry(context);
 	}
 
 	void onEvent(T context, int event)
 	{
-		_currentState.onEvent(context, event);
+		_currentState->onEvent(context, event);
 
-		Transition<T>* transition = findTransition(&_currentState, event);
+		Transition<T>* transition = findTransition(_currentState, event);
 		if (transition == nullptr)
 		{
 			return;
 		}
 
-		transition->transit(context);
+		_currentState = transition->transit(context);
 	}
 
 private:
 	State<T>& _initialState;
-	State<T>& _currentState;
+	State<T>* _currentState;
 	std::map<std::pair<State<T>*, int>, Transition<T>*> _transitionMap;
 	
 	Transition<T>* findTransition(State<T>* src, int event)

@@ -22,9 +22,9 @@ public:
 class TestAction : public util::Action<TestStateMachineContext&>
 {
 public:
-	MOCK_METHOD1(function, void(TestStateMachineContext&));
+	MOCK_METHOD1(operatorCall, void(TestStateMachineContext&));
 
-	void operator()(TestStateMachineContext& context) { function(context); }
+	void operator()(TestStateMachineContext& context) { operatorCall(context); }
 };
 
 struct TestEvent
@@ -67,7 +67,6 @@ protected:
 
 TEST_F(TestStateMachine, start)
 {
-	// start
 	EXPECT_CALL(_state1, entry(_))
 		.Times(1);
 
@@ -76,55 +75,93 @@ TEST_F(TestStateMachine, start)
 
 TEST_F(TestStateMachine, onEvent)
 {
-	{
-		InSequence inSequence;
+	_state1.addEventAction(TestEvent::even1, _action);
 
-		// start
+	{
 		EXPECT_CALL(_state1, entry(_))
 			.Times(1);
-
-		// on TestEvent::even1
-		EXPECT_CALL(_action, function(_))
-			.Times(1);
+		_statemachine.start(_context);
 	}
 
-	_state1.addEventAction(TestEvent::even1, _action);
-	_statemachine.start(_context);
-	_statemachine.onEvent(_context, TestEvent::even1);
+	{
+		EXPECT_CALL(_action, operatorCall(_))
+			.Times(1);
+		_statemachine.onEvent(_context, TestEvent::even1);
+	}
 }
 
-TEST_F(TestStateMachine, onEvent_SelfTransition)
+TEST_F(TestStateMachine, onEvent_withTransition)
 {
+	_state1.addEventAction(TestEvent::even1, _action);
+	_statemachine.addTransition(_state1, TestEvent::even1, _state1);
+
+	{
+		EXPECT_CALL(_state1, entry(_))
+			.Times(1);
+		_statemachine.start(_context);
+	}
+
 	{
 		InSequence inSequence;
 
-		// start
-		EXPECT_CALL(_state1, entry(_))
+		EXPECT_CALL(_action, operatorCall(_))
 			.Times(1);
-
-		// on TestEvent::even1
 		EXPECT_CALL(_state1, exit(_))
 			.Times(1);
 		EXPECT_CALL(_state1, entry(_))
 			.Times(1);
+		_statemachine.onEvent(_context, TestEvent::even1);
 	}
-
-	_statemachine.addTransition(_state1, TestEvent::even1, _state1);
-	_statemachine.start(_context);
-	_statemachine.onEvent(_context, TestEvent::even1);
 }
 
-TEST_F(TestStateMachine, hoge)
+TEST_F(TestStateMachine, onEvent_multipleTransitions)
 {
-	//_statemachine.addTransition(_testState1, TestEvent::even1, _testState1);
-	//_statemachine.addTransition(_testState1, TestEvent::even2, _testState2);
-	//_statemachine.addTransition(_testState1, TestEvent::even3, _testState3);
-	//_statemachine.addTransition(_testState2, TestEvent::even2, _testState2);
-	//_statemachine.addTransition(_testState2, TestEvent::even3, _testState3);
-	//_statemachine.addTransition(_testState3, TestEvent::even1, _testState1);
-	//_statemachine.addTransition(_testState3, TestEvent::even3, _testState3);
-	//_statemachine.start(_context);
+	_state1.addEventAction(TestEvent::even2, _action);
+	_state2.addEventAction(TestEvent::even3, _action);
+	_state3.addEventAction(TestEvent::even1, _action);
+	_statemachine.addTransition(_state1, TestEvent::even2, _state2);
+	_statemachine.addTransition(_state2, TestEvent::even3, _state3);
+	_statemachine.addTransition(_state3, TestEvent::even1, _state1);
 
-	//EXPECT_CALL(testState1, entry(_))
-	//	.Times(1);
+	{
+		EXPECT_CALL(_state1, entry(_))
+			.Times(1);
+		_statemachine.start(_context);
+	}
+
+	{
+		InSequence inSequence;
+
+		EXPECT_CALL(_action, operatorCall(_))
+			.Times(1);
+		EXPECT_CALL(_state1, exit(_))
+			.Times(1);
+		EXPECT_CALL(_state2, entry(_))
+			.Times(1);
+		_statemachine.onEvent(_context, TestEvent::even2);
+	}
+
+	{
+		InSequence inSequence;
+
+		EXPECT_CALL(_action, operatorCall(_))
+			.Times(1);
+		EXPECT_CALL(_state2, exit(_))
+			.Times(1);
+		EXPECT_CALL(_state3, entry(_))
+			.Times(1);
+		_statemachine.onEvent(_context, TestEvent::even3);
+	}
+
+	{
+		InSequence inSequence;
+
+		EXPECT_CALL(_action, operatorCall(_))
+			.Times(1);
+		EXPECT_CALL(_state3, exit(_))
+			.Times(1);
+		EXPECT_CALL(_state1, entry(_))
+			.Times(1);
+		_statemachine.onEvent(_context, TestEvent::even1);
+	}	
 }
