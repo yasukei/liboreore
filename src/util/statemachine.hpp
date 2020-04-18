@@ -2,7 +2,8 @@
 
 #include <map>
 
-#include "SimplUtil.hpp"
+namespace util
+{
 
 template <typename T>
 class State
@@ -166,3 +167,5 @@ private:
 		return it->second;
 	}
 };
+
+}

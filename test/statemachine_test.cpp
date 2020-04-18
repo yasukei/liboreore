@@ -10,7 +10,7 @@ public:
     int counter;
 };
 
-class State1 : public State<Context&>
+class State1 : public util::State<Context&>
 {
     // TODO use gmock
 public:
@@ -33,7 +33,7 @@ struct TestEvent
 TEST(TestCaseName, TestName)
 {
     State1 state1;
-    StateMachine<Context&> statemachine(state1);
+	util::StateMachine<Context&> statemachine(state1);
     Context context;
 
     statemachine.addTransition(state1, TestEvent::even1, state1);
