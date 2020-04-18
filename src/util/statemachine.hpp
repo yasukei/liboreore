@@ -6,18 +6,55 @@ namespace util
 {
 
 template <typename T>
+class Action
+{
+public:
+	virtual void operator()(T context) {}
+};
+
+template <typename T>
 class State
 {
 public:
 	virtual void entry(T) {}
 	virtual void exit(T) {}
-};
 
-template <typename T>
-class Action
-{
-public:
-	virtual void operator()(T context) {}
+	bool addEventAction(int event, Action<T>& action)
+	{
+		Action<T>* existingAction = findAction(event);
+		if (existingAction != nullptr)
+		{
+			return false;
+		}
+
+		_eventToActionMap.insert(std::make_pair(event, &action));
+		return true;
+	}
+	void onEvent(T context, int event)
+	{
+		Action<T>* action = findAction(event);
+		if (action == nullptr)
+		{
+			return;
+		}
+
+		(*action)(context);
+	}
+
+private:
+	std::map<int, Action<T>*> _eventToActionMap;
+
+	Action<T>* findAction(int event)
+	{
+		typename std::map<int, Action<T>*>::iterator it = _eventToActionMap.find(event);
+
+		if (it == _eventToActionMap.end())
+		{
+			// not found
+			return nullptr;
+		}
+		return it->second;
+	}
 };
 
 template <typename T>
@@ -58,11 +95,11 @@ public:
 	{
 		_src.exit(context);
 		_action(context);
-		
-		State<T>& dst = _branch(context);
-		_dst.entry(context);
 
-		return _dst;
+		State<T>& dst = _branch(context);
+		dst.entry(context);
+
+		return dst;
 	}
 private:
 	State<T>& _src;
@@ -138,8 +175,10 @@ public:
 		_currentState.entry(context);
 	}
 
-	void onEvent(int event, T context)
+	void onEvent(T context, int event)
 	{
+		_currentState.onEvent(context, event);
+
 		Transition<T>* transition = findTransition(&_currentState, event);
 		if (transition == nullptr)
 		{
