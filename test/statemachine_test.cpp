@@ -2,21 +2,21 @@
 #include "util/statemachine.hpp"
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-struct Context
+using testing::_;
+using testing::InSequence;
+
+struct TestStateMachineContext
 {
 public:
-    int counter;
 };
 
-class State1 : public util::State<Context&>
+class TestState : public util::State<TestStateMachineContext&>
 {
-    // TODO use gmock
 public:
-    void entry(Context& context)
-    {
-        context.counter += 1;
-    }
+	MOCK_METHOD1(entry, void(TestStateMachineContext&));
+	MOCK_METHOD1(exit, void(TestStateMachineContext&));
 };
 
 struct TestEvent
@@ -29,14 +29,31 @@ struct TestEvent
     };
 };
 
-TEST(TestCaseName, TestName)
+class TestStateMachine : public testing::Test
 {
-    State1 state1;
-	util::StateMachine<Context&> statemachine(state1);
-    Context context;
+public:
+	TestStateMachine() :
+		_state1(),
+		_statemachine(_state1),
+		_context()
+	{
+	}
 
-    statemachine.addTransition(state1, TestEvent::even1, state1);
-    statemachine.start(context);
+protected:
+	virtual void SetUp()
+	{
+	}
+	virtual void TearDown()
+	{
+	}
 
-	EXPECT_TRUE(false);
+	TestState _state1;
+	util::StateMachine<TestStateMachineContext&> _statemachine;
+	TestStateMachineContext _context;
+};
+
+TEST_F(TestStateMachine, start)
+{
+    _statemachine.addTransition(_state1, TestEvent::even1, _state1);
+	_statemachine.start(_context);
 }
