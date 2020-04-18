@@ -1,5 +1,7 @@
 # usage
-mkdir build
-cd build
-cmake .. && make
+TODO
 
+# TODO
+- take coverage
+- take performance measurement
+- detect memory leak
