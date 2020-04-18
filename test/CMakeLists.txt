@@ -5,6 +5,7 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
 add_executable(
 	liboreore_test
 	statemachine_test.cpp
+	queue_test.cpp
 	)
 
 target_include_directories(
@@ -14,8 +15,6 @@ target_include_directories(
 
 target_link_libraries(
 	liboreore_test
-	#oreore
-	#gmock
 	gmock_main
 	#gcov
 	)
