@@ -4,9 +4,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-using testing::_;
-using testing::InSequence;
-
 class TestQueue : public testing::Test
 {
 public:
