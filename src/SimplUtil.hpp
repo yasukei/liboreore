@@ -1,30 +1,6 @@
 #pragma once
 
-template <typename T>
-class EventListener
-{
-	virtual void notifyEvent(T event) = 0;
-};
 
-#include <vector>
-template <typename T>
-class EventListeners
-{
-public:
-	void addListener(EventListener<T>& listener)
-	{
-		_listeners.push_back(listener);
-	}
-	void notifyEvent(T event)
-	{
-		for (EventListener<T>& listener in _listeners)
-		{
-			listener.notifyEvent(event);
-		}
-	}
-private:
-	std::vector<EventListener<T>&> _listeners;
-};
 
 #include <string.h>
 class SimpleDictionary
