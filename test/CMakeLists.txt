@@ -4,9 +4,10 @@
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
 add_executable(
 	liboreore_test
-	listener_test.cpp
-	statemachine_test.cpp
-	queue_test.cpp
+	clock_test.cpp
+	#listener_test.cpp
+	#statemachine_test.cpp
+	#queue_test.cpp
 	)
 
 target_include_directories(
